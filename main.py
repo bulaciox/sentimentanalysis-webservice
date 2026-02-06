@@ -1,7 +1,16 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return RedirectResponse(url="/docs")
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 class TextInput(BaseModel):
     text: str
