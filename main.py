@@ -4,16 +4,15 @@ from pydantic import BaseModel
 
 from afinn import Afinn
 
-import spacy
-from spacytextblob.spacytextblob import SpacyTextBlob
+# import spacy
+# from spacytextblob.spacytextblob import SpacyTextBlob
 
 app = FastAPI()
 afinn = Afinn()
 
 # initialize spacy and add the spacytextblob component for english sentiment analysis
-nlp_en = spacy.load("en_core_web_sm")
-
-nlp_en.add_pipe('spacytextblob')
+# nlp_en = spacy.load("en_core_web_sm")
+# nlp_en.add_pipe('spacytextblob')
 
 @app.get("/")
 def read_root():
@@ -26,7 +25,7 @@ def health_check():
 class TextInput(BaseModel):
     text: str
 
-@app.post("/v1/sentiment")
+@app.post("/v2/sentiment")
 def analyze_sentiment(text: TextInput):
     lowered_text = text.text.lower()
 
@@ -37,14 +36,15 @@ def analyze_sentiment(text: TextInput):
     else:
         return {"score": 0}
 
-@app.post("/v2/sentiment")
+@app.post("/v1/sentiment")
 def analyze_sentiment_v2(text: TextInput):
     return {"score": afinn.score(text.text)}
 
-@app.post("/v3/sentiment")
-def analyze_sentiment_v3(text: TextInput):
-    doc = nlp_en(text.text)
-    sentiment = doc._.blob.polarity
-    return {"score": sentiment}
+# Disable v3 because of docker size
+# @app.post("/v3/sentiment")
+# def analyze_sentiment_v3(text: TextInput):
+#     doc = nlp_en(text.text)
+#     sentiment = doc._.blob.polarity
+#     return {"score": sentiment}
 
     
