@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+from afinn import Afinn
 
 app = FastAPI()
+afinn = Afinn()
 
 @app.get("/")
 def read_root():
@@ -25,3 +27,8 @@ def analyze_sentiment(text: TextInput):
         return {"score": -3}
     else:
         return {"score": 0}
+
+@app.post("/v2/sentiment")
+def analyze_sentiment_v2(text: TextInput):
+    return {"score": afinn.score(text.text)}
+    
